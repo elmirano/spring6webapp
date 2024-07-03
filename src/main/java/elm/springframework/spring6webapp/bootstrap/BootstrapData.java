@@ -43,28 +43,31 @@ public class BootstrapData implements CommandLineRunner {
 
         Publisher pub1 = new Publisher();
         pub1.setPublisherName("Phoenix Publishing");
+        var savedPublisher1 = publisherRepository.save(pub1);
 
         Publisher pub2 = new Publisher();
         pub2.setPublisherName("Solid Rock Publishing");
+        var savedPublisher2 = publisherRepository.save(pub2);
 
         var ericSaved = authorRepository.save(eric);
-        var rodSaved = authorRepository.save(rod);
-
         var dddSaved = bookRepository.save(ddd);
+
+        var rodSaved = authorRepository.save(rod);
         var noEjbSaved = bookRepository.save(noEJB);
+
+        ericSaved.getBooks().add(dddSaved);
+        rodSaved.getBooks().add(noEjbSaved);
+        dddSaved.getAuthors().add(ericSaved);
+        noEjbSaved.getAuthors().add(rodSaved);
 
         publisherRepository.save(pub1);
         publisherRepository.save(pub2);
 
-        ericSaved.getBooks().add(dddSaved);
-        rodSaved.getBooks().add(noEjbSaved);
+        dddSaved.setPublisher(pub1);
+        noEjbSaved.setPublisher(pub2);
 
         authorRepository.save(ericSaved);
         authorRepository.save(rodSaved);
-
-        dddSaved.getAuthors().add(ericSaved);
-        noEjbSaved.getAuthors().add(rodSaved);
-
         bookRepository.save(dddSaved);
         bookRepository.save(noEjbSaved);
 
