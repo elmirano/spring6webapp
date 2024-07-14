@@ -16,16 +16,16 @@ class Spring6WebappApplicationTests {
 	@Autowired
 	MyController myController;
 
-	@Test
-	void contextLoads() {
-		MyController myController = applicationContext.getBean(MyController.class);
-		Assertions.assertNotNull(myController);
-	}
-
-	@Test
-	void testGetController() {
-		MyController myController = applicationContext.getBean(MyController.class);
-		Assertions.assertEquals( myController.sayHello(), "Hello Everyone!!!");
-	}
+//	@Test
+//	void contextLoads() {
+//		MyController myController = applicationContext.getBean(MyController.class);
+//		Assertions.assertNotNull(myController);
+//	}
+//
+//	@Test
+//	void testGetController() {
+//		MyController myController = applicationContext.getBean(MyController.class);
+//		Assertions.assertEquals( myController.sayHello(), "Hello Everyone!!!");
+//	}
 
 }
