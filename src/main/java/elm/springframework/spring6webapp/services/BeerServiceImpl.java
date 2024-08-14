@@ -1,9 +1,11 @@
 package elm.springframework.spring6webapp.services;
 
+import elm.springframework.spring6webapp.exception.BeerNotFoundException;
 import elm.springframework.spring6webapp.model.Beer;
 import elm.springframework.spring6webapp.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,7 +17,9 @@ public class BeerServiceImpl implements BeerService{
 
     private Map<UUID, Beer> beerMap;
 
-    public BeerServiceImpl(){this.beerMap = new HashMap<>();
+    public BeerServiceImpl(){
+        this.beerMap = new HashMap<>();
+        System.out.println("Initialized beer");
 
         Beer beer1 = Beer.builder()
                 .id(UUID.randomUUID())
@@ -60,15 +64,80 @@ public class BeerServiceImpl implements BeerService{
     }
 
     @Override
-    public Beer getBeerById(UUID id) {
+    public Optional<Beer> getBeerById(UUID id) {
 
         log.debug("Get Beer by Id - in service was called");
+        System.out.println("Beer ID : "+id);
 
-        return beerMap.get(id);
+        return Optional.of(beerMap.get(id));
     }
 
     @Override
     public List<Beer> listBeers() {
         return new ArrayList<>(beerMap.values());
     }
+
+    @Override
+    public Beer saveBeer(Beer beer) {
+        Beer savedBeer = Beer.builder()
+                .id(UUID.randomUUID())
+                .version(beer.getVersion())
+                .createdDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .beerName(beer.getBeerName())
+                .beerStyle(beer.getBeerStyle())
+                .quantityOnHand(beer.getQuantityOnHand())
+                .upc(beer.getUpc())
+                .price(beer.getPrice())
+                .build();
+        beerMap.put(savedBeer.getId(), savedBeer);
+        log.debug("Beer saved.");
+        return savedBeer;
+    }
+
+    @Override
+    public Beer updateBeer(UUID beerId, Beer updatedBeer){
+
+        Beer currentBeer = beerMap.get(beerId);
+        currentBeer.setBeerName(updatedBeer.getBeerName());
+        currentBeer.setBeerStyle(updatedBeer.getBeerStyle());
+        currentBeer.setPrice(updatedBeer.getPrice());
+        currentBeer.setUpc(updatedBeer.getUpc());
+        currentBeer.setQuantityOnHand(updatedBeer.getQuantityOnHand());
+        currentBeer.setUpdateDate(LocalDateTime.now());
+
+        beerMap.put(beerId, currentBeer);
+
+        return currentBeer;
+    }
+
+    @Override
+    public void patchBeerById(UUID beerId, Beer beer) {
+        Beer existing = beerMap.get(beerId);
+
+        if (StringUtils.hasText(beer.getBeerName())){
+            existing.setBeerName(beer.getBeerName());
+        }
+
+        if (beer.getBeerStyle() != null) {
+            existing.setBeerStyle(beer.getBeerStyle());
+        }
+
+        if (beer.getPrice() != null) {
+            existing.setPrice(beer.getPrice());
+        }
+
+        if (beer.getQuantityOnHand() != null){
+            existing.setQuantityOnHand(beer.getQuantityOnHand());
+        }
+
+        if (StringUtils.hasText(beer.getUpc())) {
+            existing.setUpc(beer.getUpc());
+        }
+    }
+    @Override
+    public void delete(UUID beerId) {
+        beerMap.remove(beerId);
+    }
+
 }
